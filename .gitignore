@@ -1,0 +1,52 @@
+# Dependencies
+node_modules/
+.pnp
+.pnp.js
+
+# Build outputs
+dist/
+build/
+.expo/
+mobile/dist/
+mobile/.expo/
+
+# Environment files (never commit secrets)
+.env
+.env.local
+.env.production
+
+# Expo
+mobile/node_modules/
+mobile/.expo/
+mobile/dist/
+
+# Backend
+backend/node_modules/
+backend/dist/
+
+# Uploads (user-generated content)
+backend/uploads/*
+!backend/uploads/.gitkeep
+
+# Claude Code local settings
+.claude/
+
+# OS / IDE
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V8
+.Trashes
+ehthumbs.db
+Thumbs.db
+.vscode/settings.json
+.idea/
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Type checking cache
+*.tsbuildinfo

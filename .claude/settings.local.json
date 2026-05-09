@@ -1,0 +1,22 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm install *)",
+      "Bash(npx expo *)",
+      "Bash(npx prisma *)",
+      "Bash(npx tsc *)",
+      "Bash(npm run *)",
+      "Bash(docker compose *)",
+      "Bash(docker volume *)",
+      "Bash(xargs ls *)",
+      "Bash(sips -z 192 192 /Users/gui/projects/fitness-app/mobile/assets/images/icon.png --out /Users/gui/projects/fitness-app/mobile/public/icon-192.png)",
+      "Bash(sips -z 512 512 /Users/gui/projects/fitness-app/mobile/assets/images/icon.png --out /Users/gui/projects/fitness-app/mobile/public/icon-512.png)",
+      "Bash(docker exec *)",
+      "Bash(vercel --yes)",
+      "Bash(git init *)",
+      "Bash(git remote *)",
+      "Bash(git branch *)",
+      "Bash(git add *)"
+    ]
+  }
+}

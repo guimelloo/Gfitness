@@ -1,0 +1,302 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id          String      @id @default(uuid())
+  name        String
+  email       String      @unique
+  password    String
+  role        Role
+  createdAt   DateTime    @default(now())
+
+  workouts          Workout[]
+  meals             Meal[]
+  checkins          Checkin[]
+  alerts            Alert[]
+  notes             CoachNote[]
+  notifications     Notification[]
+  weeklyProgress    WeeklyProgress[]
+  dailyLogs         DailyLog[]
+  userProfile       UserProfile?
+  workoutPlan       WorkoutPlan?
+}
+
+model Workout {
+  id          String              @id @default(uuid())
+  title       String
+  description String?
+  date        DateTime
+  userId      String
+  user        User                @relation(fields: [userId], references: [id])
+
+  exercises   WorkoutExercise[]
+}
+
+model WorkoutExercise {
+  id            String    @id @default(uuid())
+  workoutId     String
+  exerciseId    String
+  sets          Int
+  reps          Int
+  weight        Float?
+
+  workout       Workout   @relation(fields: [workoutId], references: [id])
+  exercise      Exercise  @relation(fields: [exerciseId], references: [id])
+}
+
+model Exercise {
+  id                String                  @id @default(uuid())
+  name              String
+  muscleGroup       String
+  equipment         String?
+  instructions      String?
+  youtubeQuery      String?
+  gifUrl            String?
+
+  workoutExercises  WorkoutExercise[]
+  substitutionsFrom ExerciseSubstitution[] @relation("FromExercise")
+  substitutionsTo   ExerciseSubstitution[] @relation("ToExercise")
+  youtubeVideos     YoutubeVideo[]
+}
+
+model ExerciseSubstitution {
+  id            String    @id @default(uuid())
+  exerciseId    String
+  substituteId  String
+
+  exercise      Exercise  @relation("FromExercise", fields: [exerciseId], references: [id])
+  substitute    Exercise  @relation("ToExercise", fields: [substituteId], references: [id])
+}
+
+model Meal {
+  id          String      @id @default(uuid())
+  name        String
+  totalKcal   Int
+  protein     Float
+  carbs       Float
+  fat         Float
+  mealTime    String
+  date        DateTime
+  userId      String
+  user        User        @relation(fields: [userId], references: [id])
+
+  items       MealItem[]
+}
+
+model MealItem {
+  id          String   @id @default(uuid())
+  mealId      String
+  foodName    String
+  quantity    Float
+  calories    Float
+  protein     Float
+  carbs       Float
+  fat         Float
+
+  meal        Meal     @relation(fields: [mealId], references: [id])
+}
+
+model Checkin {
+  id          String    @id @default(uuid())
+  weight      Float
+  bodyFat     Float?
+  notes       String?
+  createdAt   DateTime  @default(now())
+  userId      String
+  user        User      @relation(fields: [userId], references: [id])
+}
+
+model Alert {
+  id          String    @id @default(uuid())
+  title       String
+  message     String
+  isActive    Boolean   @default(true)
+  createdAt   DateTime  @default(now())
+  userId      String
+  user        User      @relation(fields: [userId], references: [id])
+}
+
+model CoachNote {
+  id          String    @id @default(uuid())
+  content     String
+  createdAt   DateTime  @default(now())
+  userId      String
+  user        User      @relation(fields: [userId], references: [id])
+}
+
+model Notification {
+  id          String    @id @default(uuid())
+  title       String
+  message     String
+  isRead      Boolean   @default(false)
+  type        NotificationType
+  createdAt   DateTime  @default(now())
+  userId      String
+  user        User      @relation(fields: [userId], references: [id])
+}
+
+model WeeklyProgress {
+  id                String    @id @default(uuid())
+  weekStart         DateTime
+  weekEnd           DateTime
+  weight            Float?
+  averageCalories   Float?
+  averageProtein    Float?
+  workoutsCompleted Int       @default(0)
+  mealsCompleted    Int       @default(0)
+  notes             String?
+
+  userId            String
+  user              User      @relation(fields: [userId], references: [id])
+}
+
+model YoutubeVideo {
+  id            String    @id @default(uuid())
+  youtubeId     String
+  title         String
+  thumbnailUrl  String
+  videoUrl      String
+  cachedAt      DateTime  @default(now())
+
+  exerciseId    String
+  exercise      Exercise  @relation(fields: [exerciseId], references: [id])
+}
+
+enum Role {
+  USER
+  COACH
+}
+
+enum NotificationType {
+  WORKOUT_REMINDER
+  MEAL_REMINDER
+  CHECKIN_REMINDER
+  COACH_MESSAGE
+  ALERT
+}
+
+model UserProfile {
+  id                    String    @id @default(uuid())
+  userId                String    @unique
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  currentWeight         Float?
+  targetWeightMin       Float?
+  targetWeightMax       Float?
+  height                Float?
+  age                   Int?
+  
+  caloriesTrainingDay   Int       @default(2300)
+  caloriesRestDay       Int       @default(2100)
+  proteinDaily          Float     @default(180)
+  carbsTrainingDay      Float     @default(245)
+  carbsRestDay          Float     @default(195)
+  fatTrainingDay        Float     @default(66)
+  fatRestDay            Float     @default(70)
+  
+  waterGoal             Float     @default(3.0)
+  weekBlockNumber       Int       @default(1)
+  gender                String?   @default("male")
+  avatarUrl             String?
+
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+}
+
+model DailyLog {
+  id                String    @id @default(uuid())
+  userId            String
+  user              User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  date              DateTime
+  weight            Float?
+  workoutCompleted  Boolean   @default(false)
+  workoutType       String?   // "costas", "peito", "perna", "fullbody"
+  waterIntake       Float?    // em litros
+  notes             String?
+  
+  meals             MealLog[]
+  
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  
+  @@unique([userId, date])
+}
+
+model MealLog {
+  id              String    @id @default(uuid())
+  dailyLogId      String
+  dailyLog        DailyLog  @relation(fields: [dailyLogId], references: [id], onDelete: Cascade)
+  
+  mealName        String    // ex: "Café da manhã", "Almoço"
+  totalKcal       Float
+  protein         Float
+  carbs           Float
+  fat             Float
+  
+  items           MealLogItem[]
+  
+  createdAt       DateTime  @default(now())
+}
+
+model MealLogItem {
+  id              String    @id @default(uuid())
+  mealLogId       String
+  mealLog         MealLog   @relation(fields: [mealLogId], references: [id], onDelete: Cascade)
+  
+  foodName        String
+  quantity        Float     // ex: 100g, 1 unidade
+  unit            String    // ex: "g", "ml", "unidade"
+  calories        Float
+  protein         Float
+  carbs           Float
+  fat             Float
+  
+  createdAt       DateTime  @default(now())
+}
+
+model WorkoutPlan {
+  id          String           @id @default(uuid())
+  userId      String           @unique
+  user        User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  days        WorkoutPlanDay[]
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+}
+
+model WorkoutPlanDay {
+  id            String                @id @default(uuid())
+  workoutPlanId String
+  workoutPlan   WorkoutPlan           @relation(fields: [workoutPlanId], references: [id], onDelete: Cascade)
+  dayOfWeek     Int
+  dayName       String
+  muscleGroups  String
+  exercises     WorkoutPlanExercise[]
+  createdAt     DateTime              @default(now())
+}
+
+model WorkoutPlanExercise {
+  id               String         @id @default(uuid())
+  workoutPlanDayId String
+  workoutPlanDay   WorkoutPlanDay @relation(fields: [workoutPlanDayId], references: [id], onDelete: Cascade)
+  name             String
+  sets             Int
+  reps             String
+  note             String?
+  order            Int            @default(0)
+  createdAt        DateTime       @default(now())
+}
+
+model NutritionCache {
+  id              String    @id @default(uuid())
+  query           String    @unique
+  data            String    // JSON stringified nutrition data
+  expiresAt       DateTime
+  createdAt       DateTime  @default(now())
+}
