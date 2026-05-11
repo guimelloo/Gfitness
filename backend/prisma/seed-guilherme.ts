@@ -36,7 +36,7 @@ async function seedGuilhermeProfile() {
         fatTrainingDay: 66,
         fatRestDay: 70,
         waterGoal: 3.0,
-        WeekBlockNumber: 1,
+        weekBlockNumber: 1,
       },
       update: {
         currentWeight: 86,
@@ -52,7 +52,7 @@ async function seedGuilhermeProfile() {
         fatTrainingDay: 66,
         fatRestDay: 70,
         waterGoal: 3.0,
-        WeekBlockNumber: 1,
+        weekBlockNumber: 1,
       },
     });
 
