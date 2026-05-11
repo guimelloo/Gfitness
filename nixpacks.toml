@@ -1,0 +1,11 @@
+[start]
+cmd = "node dist/main"
+
+# This is a monorepo with backend and mobile
+# We only deploy the backend
+[variables]
+NODE_VERSION = "20"
+NODE_ENV = "production"
+
+[[build.commands]]
+run = "cd backend && npm install && npx prisma generate && npm run build"
