@@ -1,22 +1,15 @@
-FROM node:20
+FROM node:20-alpine
 
 WORKDIR /app
 
-# Copy package files
 COPY package*.json ./
+RUN npm ci --only=production=false
 
-# Install dependencies
-RUN npm ci
-
-# Copy the rest of the application
 COPY . .
 
-# Generate Prisma Client
 RUN npx prisma generate
-
-# Build the application
 RUN npm run build
 
 EXPOSE 3000
 
-CMD ["npm", "run", "start:dev"]
+CMD ["npm", "run", "start:prod"]
