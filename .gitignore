@@ -31,6 +31,16 @@ backend/uploads/*
 # Claude Code local settings
 .claude/
 
+# IDE / editor
+.vscode/
+.idea/
+
+# Deployment platform configs (not needed in repo)
+render.yaml
+
+# Personal seed / dev notes
+SEED_GUILHERME_INFO.md
+
 # OS / IDE
 .DS_Store
 .DS_Store?
