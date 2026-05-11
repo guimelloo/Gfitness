@@ -1,0 +1,17 @@
+[build]
+nixpkgs-url = "https://github.com/NixOS/nixpkgs/archive/nixos-unstable.tar.gz"
+
+[start]
+cmd = "node dist/main"
+
+[build.nix-shell]
+packages = ["nodejs_20"]
+
+[[build.commands]]
+run = "npm install"
+
+[[build.commands]]
+run = "npx prisma generate"
+
+[[build.commands]]
+run = "npm run build"
